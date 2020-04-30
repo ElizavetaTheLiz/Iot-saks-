@@ -1,0 +1,161 @@
+
+
+
+//zamanı gösterecek "zaman" adında bir değişken
+// maxIsikDegeri tanımla!
+//minIsikDegeri tanımla!
+
+
+
+int zaman = ;
+int maxIsikDegeri = ;
+int minIsikDegeri = ;
+int state = 0;
+
+
+
+
+void loop() {
+  if(Serial.available() > 0){ 
+    girdi = Serial.read(); 
+ }
+
+
+ if (girdi == 'S') {
+  Serial.println("suSeviyeDegeri");
+  	if ( suSeviyeDegeri <=10) {
+		 Serial.println("Biraz su eklemekte fayda var!");
+}
+	if ( suSeviyeDegeri <=30 && suSeviyeDegeri >10) {
+		 Serial.println("Su biraz azalıyor...");
+}
+	if ( suSeviyeDegeri >30) {
+		 Serial.println("Su gayet yeterli!");
+}
+  state = 0;
+ }
+
+
+
+ else if (girdi == 'N') {
+  Serial.println("Nem Degeri");
+	if ( Nem Degeri <=40) {
+		 Serial.println("Bitkini biraz daha nemli bir ortama götürmek isteyebilirsin.");
+}
+	if ( Nem Degeri <=40 && Nem Degeri >65) {
+		 Serial.println("Ortamdaki nem değeri gayet uygun.");
+}
+	if ( Nem Degeri >65) {
+		 Serial.println("Burası biraz fazla nemli...");
+}
+  state = 0;
+ } 
+
+
+
+ else if (girdi == 'I') {
+  Serial.println("isikDegeri");
+	if ( isikDegeri <=minIsikDegeri) {
+		 Serial.println("Burası karanlık!");
+}
+	if ( isikDegeri <=maxIsikDegeri && isikDegeri >minIsikDegeri) {
+		 Serial.println("Bitkin bu ışıktan memnun kalmış olmalı.");
+}
+	if ( isikDegeri >maxIsikDegeri) {
+		 Serial.println("Fazla aydınlık!");
+}
+  state = 0;
+ }
+
+
+
+ else if (girdi == 'K') {
+  digitalWrite(motorPini, LOW);
+  digitalWrite(motorPini2, LOW);
+  Serial.println("Motorlar Kapatıldı.");
+  state = 0;
+ }
+
+
+
+ else if (girdi == 'A') {
+  digitalWrite(motorPini, HIGH);
+  digitalWrite(motorPini2, LOW);
+  Serial.println("Motorlar Kapatıldı.");
+  state = 0;
+ }
+
+
+
+
+else if (girdi == 'Z') {
+   Serial.println("Zaman:" zaman);
+   state = 0;
+}
+
+
+
+
+else if (girdi == 'T') {
+   Serial.println("Otomatik sulama için süre değeri giriniz:");
+   Sayac = Serial.read(); 
+   Serial.println("Sayaç Başlatıldı!");
+     if (Sayac ==0) {
+	digitalWrite(motorPini, HIGH);
+	digitalWrite(motorPini2, LOW);
+        delay(3000);
+	digitalWrite(motorPini, HIGH);
+	digitalWrite(motorPini2, LOW);
+}
+  state = 0;
+}
+
+
+
+
+ else {
+state = 0;
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+char emir; 
+
+  if(Serial.available() > 0){ 
+    emir = Serial.read(); 
+    Stop(); 
+    switch(emir){
+      break;
+    case 'N':
+      nemOrani();
+      break;
+    case 'I':
+      isikOrani();
+      break;
+    case 'S':
+      suOrani();
+      break;
+    case 'K':
+      motorKapa();
+      break;
+    case 'A':
+      motorAc();
+      break;
+    case 'Z':
+      tarihYazimi();
+    }
+  }
+
+
+
+
