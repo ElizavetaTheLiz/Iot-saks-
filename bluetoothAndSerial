@@ -1,161 +1,244 @@
 
+String emir;
+char ilkHarf;
+String verilenSaat;
+String verilenDakika;
+String verilenSaniye;
+int maxIsikDegeri; //bu arkadaşa bir değer bul
+int minIsikDegeri;  //buna da
 
 
-//zamanı gösterecek "zaman" adında bir değişken
-// maxIsikDegeri tanımla!
-//minIsikDegeri tanımla!
+int nemDegeri = 0;
+int isikDegeri = 0;
+int suSeviyeDegeri = 0;
 
-
-
-int zaman = ;
-int maxIsikDegeri = ;
-int minIsikDegeri = ;
-int state = 0;
+String saat = "";
+String dakika = "";
+String saniye = "";
+int oncekiSaniye = 0;
 
 
 
 
-void loop() {
-  if(Serial.available() > 0){ 
-    girdi = Serial.read(); 
- }
+# include <TimeLib.h>
+# include <SoftwareSerial.h>
 
 
- if (girdi == 'S') {
-  Serial.println("suSeviyeDegeri");
-  	if ( suSeviyeDegeri <=10) {
-		 Serial.println("Biraz su eklemekte fayda var!");
+ define TIME_HEADER  "T"   // Header tag for serial time sync message
+ define TIME_REQUEST  7    // ASCII bell character requests a time sync message 
+
+ define isikPini A5
+ define suSeviyePini A4
+ define nemPini A3
+ define motorPini  2
+ define motorPini2 3
+
+ define BTrx 8
+ define BTtx 9
+
+SoftwareSerial btSerial(BTrx , BTtx); //bluetooth modulunun serial bağlantısının ayarlanması
+
+
+
+void saatKurulumu(int s = 12,int d = 1,int san = 1)
+{
+  setTime(s,d,san,1,1,2000);
+  oncekiSaniye = int(san)-1;
 }
-	if ( suSeviyeDegeri <=30 && suSeviyeDegeri >10) {
-		 Serial.println("Su biraz azalıyor...");
+
+String saatKac()
+{
+  saat = hour();
+  dakika = minute();
+  saniye = second();
+  
+  return(saat + " : " + dakika + " : " + saniye);
 }
-	if ( suSeviyeDegeri >30) {
-		 Serial.println("Su gayet yeterli!");
-}
-  state = 0;
- }
 
-
-
- else if (girdi == 'N') {
-  Serial.println("Nem Degeri");
-	if ( Nem Degeri <=40) {
-		 Serial.println("Bitkini biraz daha nemli bir ortama götürmek isteyebilirsin.");
-}
-	if ( Nem Degeri <=40 && Nem Degeri >65) {
-		 Serial.println("Ortamdaki nem değeri gayet uygun.");
-}
-	if ( Nem Degeri >65) {
-		 Serial.println("Burası biraz fazla nemli...");
-}
-  state = 0;
- } 
-
-
-
- else if (girdi == 'I') {
-  Serial.println("isikDegeri");
-	if ( isikDegeri <=minIsikDegeri) {
-		 Serial.println("Burası karanlık!");
-}
-	if ( isikDegeri <=maxIsikDegeri && isikDegeri >minIsikDegeri) {
-		 Serial.println("Bitkin bu ışıktan memnun kalmış olmalı.");
-}
-	if ( isikDegeri >maxIsikDegeri) {
-		 Serial.println("Fazla aydınlık!");
-}
-  state = 0;
- }
-
-
-
- else if (girdi == 'K') {
-  digitalWrite(motorPini, LOW);
-  digitalWrite(motorPini2, LOW);
-  Serial.println("Motorlar Kapatıldı.");
-  state = 0;
- }
-
-
-
- else if (girdi == 'A') {
-  digitalWrite(motorPini, HIGH);
-  digitalWrite(motorPini2, LOW);
-  Serial.println("Motorlar Kapatıldı.");
-  state = 0;
- }
-
-
-
-
-else if (girdi == 'Z') {
-   Serial.println("Zaman:" zaman);
-   state = 0;
+void tarihYazimi()
+{
+  if( int(second()) != oncekiSaniye)
+    Serial.println(saatKac());
+  
+  oncekiSaniye = int(second()); //char olduğu için int çevrilmeli
+  delay(1);
 }
 
 
+void nem(){
+    Serial.println("Nem değeri: " + String(nemOrani()));
+  if ( nemOrani() <=40) {
+    Serial.println("Nem durumu biraz düşük görünüyor.");
+  }
+  else if ( nemOrani() <=40 && nemOrani() >65) {
+    Serial.println("Nem değeri gayet uygun.");
+  }
+  else ( nemOrani() >65) {
+    Serial.println("Sanki biraz fazla nemli...");
+  }
+  }
 
 
-else if (girdi == 'T') {
-   Serial.println("Otomatik sulama için süre değeri giriniz:");
-   Sayac = Serial.read(); 
-   Serial.println("Sayaç Başlatıldı!");
-     if (Sayac ==0) {
-	digitalWrite(motorPini, HIGH);
-	digitalWrite(motorPini2, LOW);
-        delay(3000);
-	digitalWrite(motorPini, HIGH);
-	digitalWrite(motorPini2, LOW);
+
+void su(){
+  Serial.println("Su seviyesi: " + String(suOrani()));
+  if ( suOrani() <=10) {
+    Serial.println("Biraz su eklemekte fayda var!");
+  }
+  else if ( suOrani() <=30 && suOrani() >10) {
+    Serial.println("Su biraz azalıyor...");
+  }
+  else ( suOrani() >30) {
+    Serial.println("Su gayet yeterli!");
 }
-  state = 0;
-}
+  }
 
 
-
-
- else {
-state = 0;
-}
-
-
-}
-
-
-
-
-
-
-
-
-
-
-char emir; 
-
-  if(Serial.available() > 0){ 
-    emir = Serial.read(); 
-    Stop(); 
-    switch(emir){
-      break;
-    case 'N':
-      nemOrani();
-      break;
-    case 'I':
-      isikOrani();
-      break;
-    case 'S':
-      suOrani();
-      break;
-    case 'K':
-      motorKapa();
-      break;
-    case 'A':
-      motorAc();
-      break;
-    case 'Z':
-      tarihYazimi();
-    }
+void isik() {
+    Serial.println("Işık durumu: " + isikOrani());
+  if ( isikOrani() <=minIsikDegeri) {
+    Serial.println("Burası karanlık!");
+  }
+  else if ( isikOrani() <=maxIsikDegeri && isikOrani() >minIsikDegeri) {
+    Serial.println("Bitkin bu ışıktan memnun kalmış olmalı.");
+  }
+  else ( isikOrani() >maxIsikDegeri) {
+    Serial.println("Fazla aydınlık!");
+  }
   }
 
 
 
 
+
+
+
+
+
+
+void setup(){
+  // put your setup code here, to run once:
+  pinMode(nemPini, INPUT);
+  pinMode(isikPini, INPUT);
+  pinMode(suSeviyePini,INPUT);
+  pinMode(motorPini,OUTPUT);
+  pinMode(motorPini2,OUTPUT);
+  
+  Serial.begin(9600);
+  
+  saatKurulumu();
+  }
+
+
+
+
+
+
+
+
+
+
+int nemOrani()
+{
+ nemDegeri = analogRead(nemPini);
+ return(map(nemDegeri, 1, 1021, 100, 1));
+}
+
+int isikOrani()
+{
+ isikDegeri = analogRead(isikPini);
+ return(map(isikDegeri, 1, 600, 1, 100));
+ 
+}
+
+int suOrani()
+{
+ suSeviyeDegeri = analogRead(suSeviyePini);
+ return(map(suSeviyeDegeri, 1, 1021, 1, 100));
+ 
+}
+
+
+
+void motorKapa()
+{
+  digitalWrite(motorPini, LOW);
+  digitalWrite(motorPini2, LOW);
+  Serial.println("Motorlar kapatıldı, su çıkışı durduruldu.");
+}
+
+void motorAc()
+{
+  digitalWrite(motorPini, LOW);
+  digitalWrite(motorPini2, HIGH);
+  Serial.println("Motorlar açıldı, bitki sulanıyor.");
+}
+
+
+void anaFonksiyon() {
+  if(Serial.available() > 0){
+emir = Serial.read();
+ilkHarf = emir.charAt(0);
+
+
+switch(ilkHarf){
+  
+case 'N':
+nem();
+break;
+
+case 'I':
+isik();
+break;
+
+case 'S':
+su();
+break;
+
+case 'K':
+motorKapa();
+break;
+
+case 'A':
+motorAc();
+break;
+
+case 'Z':
+verilenSaat = emir.substring(1,3);
+verilenDakika = emir.substring(3,5);
+
+  if (emir.length() ==7) {
+    verilenSaniye = emir.substring(5,7);
+    }
+  else if (emir.length() ==5){
+    verilenSaniye = "00";   
+    }
+   else{
+    }
+
+  }
+
+
+
+
+
+
+
+
+
+
+void loop (){
+
+   tarihYazimi();
+   anaFonksiyon();
+
+    
+//BU VERILERLE BURADA BIR FONKSIYON ÇAĞIRMAMIZ LAZIM
+// fonksiyon(verilenSaat, verilenDakika, verilenSaniye);
+
+ 
+  break;
+    
+}
+}
+}
